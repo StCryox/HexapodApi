@@ -4,94 +4,56 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, PUT, DELETE');
 header('Content-Type: application/json');
 
-include_once('../config/database.php');
-include_once('../service/service.php');
-include_once('../model/parcours.php');
-
-$db = new Database();
-$dbConn = $db->connect();
-
-$service = new ParcoursService($dbConn);
+include_once('../business-Layer/service/parcours_service.php');
+include_once('model/parcours.php');
+include_once('rest_constants.php');
 
 $req_type = $_SERVER['REQUEST_METHOD'];
 
+$parcours_service = new ParcoursService();
+
 switch($req_type)
 {
-    case 'GET' :
-		 
+    case Rest::GET:
       if(isset($_GET["id"]) && $_GET["id"] != ' ') {
     
-        $parcours_id = $_GET["id"];
-    
-        $query = 'SELECT * FROM hexapod WHERE parcours_id = ' . $parcours_id;
-    
-        echo $service->read($query);
+         $parcours_id = $_GET["id"];
+
+         echo $parcours_service->getById($parcours_id);
       } 
-      else if (isset($_GET["name"]) && $_GET["name"] != ' ')
-      {
-        $parcours_name = $_GET["name"];
-    
-        $query = "SELECT * FROM hexapod WHERE parcours_name = '" . $parcours_name . "'";
+      else 
+         echo $parcours_service->get();
+      break;
 
-        echo $service->read($query);
-      }
-      else {
+    case Rest::POST:
 
-        $query = 'SELECT * FROM hexapod';
-
-        echo $service->read($query);
-      }
-    
-        break;
-
-    case 'POST' :
-
-		 echo $service->create(JSON_Param());
+         echo $parcours_service->post(JSON_Param());
 		 
-        break;
+      break;
 
-    case 'PUT' :
+    case Rest::PUT:
 		
-		if(isset($_GET["id"]) && $_GET["id"] != ' ') {
+	  	if(isset($_GET["id"]) && $_GET["id"] != ' ') {
 
 			   $parcours_id = $_GET["id"];
 
-			   echo $service->update($parcours_id,JSON_Param());
+			   echo $parcours_service->put($parcours_id,JSON_Param());
       } 
-      else if (isset($_GET["name"]) && $_GET["name"] != ' ')
-      {
-         $parcours_name = $_GET["name"];
-
-			   echo $service->update($parcours_name,JSON_Param());
-      }
-      else {
-        echo "Choisir un parcours a modifier";
-      }
-	
-        break;
+      break;
     
-    case 'DELETE' :
-		if(isset($_GET["id"]) && $_GET["id"] != ' ') {
+    case Rest::DELETE:
+	  	if(isset($_GET["id"]) && $_GET["id"] != ' ') {
 
 		  	 $parcours_id = $_GET["id"];
 
-			   echo $service->delete($parcours_id);
+         echo $parcours_service->delete($parcours_id);
       } 
-      else if (isset($_GET["name"]) && $_GET["name"] != ' ')
-      {
-         $parcours_name = $_GET["name"];
-
-         echo $service->delete($parcours_name); 
-      }
-      else {
-         echo "Choisir un parcours a supprimer";
-      }
-          break;
+      break;
 }
 
 function JSON_Param(){
    $jsondata = json_decode(file_get_contents("php://input"), true);
-   echo $jsondata;
-  //return new Parcours($jsondata->parcours[0]->name,$jsondata->parcours[0]->command);
-  //return new Parcours($jsondata->parcours->name,$jsondata->parcours->command);
+   var_dump($jsondata);
+   //return new ParcoursApi($jsondata->parcours[0]->name,$jsondata->parcours[0]->command);
+   return new ParcoursApi($jsondata['parcours']['name'],$jsondata['parcours']['command']);
 }

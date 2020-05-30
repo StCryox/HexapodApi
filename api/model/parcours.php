@@ -1,6 +1,6 @@
 <?PHP
 
-Class Parcours {
+Class ParcoursApi {
     public $name;
     public $command;
 
