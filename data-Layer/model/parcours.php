@@ -5,15 +5,16 @@ Class Parcours {
     public $name;
     public $command;
 
-    public function __construct($id,$name,$command) {
-        $this->id      = $id;
-        $this->name    = $name;
-        $this->command = $command;
-    }
-    
-    public static function constructor2($name, $command) {
+    public function __construct($name,$command) {
         $this->name    = $name;
         $this->command = $command;
     }
 
+    public static function withId($id, $name,$command) {
+        $parcours = new Self($name, $command);
+
+        $parcours->id = $id;
+
+        return $parcours;
+    }
 }

@@ -45,7 +45,13 @@ include_once('../api/rest_constants.php');
 				break;
 			case Rest::INTERNAL_ERROR:
 				$server_status = $status.' : Erreur interne du serveur.';
-				break;					
+				break;	
+			case 'nameExist':
+				$server_status = 'Le nom de parcours est déjà utilisé.';
+				break;
+			case 'idExist':
+				$server_status = 'Le parcours est introuvable.';
+				break;				
 		}
 		return $server_status;
 	}

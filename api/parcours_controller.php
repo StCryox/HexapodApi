@@ -5,7 +5,7 @@ header('Access-Control-Allow-Methods: POST, GET, PUT, DELETE');
 header('Content-Type: application/json');
 
 include_once('../business-Layer/service/parcours_service.php');
-include_once('model/parcours.php');
+include_once('../data-Layer/model/parcours.php');
 include_once('rest_constants.php');
 
 $req_type = $_SERVER['REQUEST_METHOD'];
@@ -27,7 +27,7 @@ switch($req_type)
 
     case Rest::POST:
 
-         echo $parcours_service->post(JSON_Param());
+         echo $parcours_service->post(Get_Param());
 		 
       break;
 
@@ -37,7 +37,7 @@ switch($req_type)
 
 			   $parcours_id = $_GET["id"];
 
-			   echo $parcours_service->put($parcours_id,JSON_Param());
+			   echo $parcours_service->put($parcours_id,Get_Param());
       } 
       break;
     
@@ -51,9 +51,11 @@ switch($req_type)
       break;
 }
 
-function JSON_Param(){
-   $jsondata = json_decode(file_get_contents("php://input"), true);
-   var_dump($jsondata);
-   //return new ParcoursApi($jsondata->parcours[0]->name,$jsondata->parcours[0]->command);
-   return new ParcoursApi($jsondata['parcours']['name'],$jsondata['parcours']['command']);
+function Get_Param(){
+   if(isset($_POST['name']))
+       return new Parcours($_POST['name'],$_POST['command']);
+   else {
+       $jsondata = json_decode(file_get_contents("php://input"), true);
+       return new Parcours($jsondata['parcours']['name'],$jsondata['parcours']['command']);
+   }
 }

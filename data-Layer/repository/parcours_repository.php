@@ -25,7 +25,7 @@ include_once('../data-Layer/model/parcours.php');
 		if($num > 0) {				
 			while($row = $dataFromQuery->fetch(PDO::FETCH_ASSOC)) {
 				extract($row);
-				 $parcours = new Parcours($parcours_id,$parcours_name,$command);
+				 $parcours = Parcours::withId($parcours_id,$parcours_name,$command);
 				 array_push($parcours_arr,$parcours);
 			}
 			return $parcours_arr;
@@ -36,7 +36,7 @@ include_once('../data-Layer/model/parcours.php');
 	
 	private function exist($value){
 		
-				  $query = 'SELECT * FROM ' . $this->_table . ' WHERE parcours_id = :parcours_id';
+				  $query = 'SELECT * FROM ' . $this->_table . ' WHERE parcours_name = :parcours_id OR parcours_id = :parcours_id';
 
 				  $stmt = $this->_conn->prepare($query);
 				  
@@ -92,6 +92,7 @@ include_once('../data-Layer/model/parcours.php');
 			 if($stmt->execute())
 					 return http_response_code();
 		 }
+		return "nameExist";
     }
 
     public function update($id,$parcours) {
@@ -119,6 +120,7 @@ include_once('../data-Layer/model/parcours.php');
 			 if($stmt->execute())
 					return http_response_code();
 		 }
+		 return "idExist";
     }
 
  
@@ -136,5 +138,6 @@ include_once('../data-Layer/model/parcours.php');
 			 if($stmt->execute()) 
 			 		return http_response_code();
 		 }
+		 return "idExist";
 	}
   }
