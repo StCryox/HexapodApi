@@ -17,7 +17,7 @@ include_once('../api/rest_constants.php');
 
 		switch ($status) {
 			case Rest::HTTP_OK:
-				$server_status = $status.' : Requête traitée avec succès';
+				$server_status = $status.' : Requête traitée avec succès.';
 				break;
 			case Rest::HTTP_CREATED:
 				$server_status = $status.' : Requête traitée avec succès et création d’un document.';
@@ -58,10 +58,15 @@ include_once('../api/rest_constants.php');
 	
 	public function get() {
 		$results = $this->parcours_repository->read();
+		//ECHO $results[0]->command;
 		
-	   if($results != false) {
+		foreach ($results as $data) {
+			//echo $data->command.'</br>';
+		}
+		//echo $data->command.'</br>';
+	    if($results != false) {
 			return json_encode($results);	
-	   }
+	    }
         else {
             return json_encode(
                 array('message' => 'Parcours non trouver')
@@ -86,17 +91,29 @@ include_once('../api/rest_constants.php');
 
 	public function post($parcours) {
 		$status = $this->parcours_repository->create($parcours);
-		return $this->getServerStatus($status);
+		
+		if($status == 200){
+			return 'Le parcours a été crée.';
+		}
+		else
+			return $this->getServerStatus($status);	
 	}
 
 	public function put($id,$parcours) {
 		$status = $this->parcours_repository->update($id,$parcours);
-		return $this->getServerStatus($status);
+		if($status == 200){
+			return 'Le parcours a été modifié.';
+		}
+		else
+			return $this->getServerStatus($status);	
 	}
 
 	public function delete($id) {
 		$status = $this->parcours_repository->delete($id);
-		return $this->getServerStatus($status);
-	}
-	
+		if($status == 200){
+			return 'Le parcours a été supprimé.';
+		}
+		else
+			return $this->getServerStatus($status);	
+	}	
   }

@@ -54,7 +54,7 @@ include_once('../data-Layer/model/parcours.php');
 
     public function read() {
    
-		 $query = 'SELECT * FROM hexapod';
+		 $query = 'SELECT * FROM hexapod ORDER BY parcours_id ASC';
 		 
 		 $stmt = $this->_conn->prepare($query);
 
@@ -112,10 +112,6 @@ include_once('../data-Layer/model/parcours.php');
 				  $stmt->bindParam(':parcours_id', $this->_parcours_id);
 				  $stmt->bindParam(':parcours_name', $this->_parcours_name);
 				  $stmt->bindParam(':command', $this->_command);
-
-				  $this->__parcours_id;
-				  $this->__parcours_name;
-				  $this->__command;
 
 			 if($stmt->execute())
 					return http_response_code();

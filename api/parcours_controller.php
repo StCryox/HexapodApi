@@ -26,19 +26,23 @@ switch($req_type)
       break;
 
     case Rest::POST:
-
          echo $parcours_service->post(Get_Param());
 		 
       break;
 
     case Rest::PUT:
-		
-	  	if(isset($_GET["id"]) && $_GET["id"] != ' ') {
+      
+	  	if(isset($_GET["id"]) && $_GET["id"] != ' ')
+         $parcours_id = $_GET["id"];
+      else {
+         //$parcours_id = Get_Param()->id;
+         $parcours_id = 110;
+         var_dump(Get_Param());
+      }
 
-			   $parcours_id = $_GET["id"];
-
-			   echo $parcours_service->put($parcours_id,Get_Param());
-      } 
+      echo $_POST["id"];
+         echo $parcours_service->put($parcours_id,Get_Param());
+      
       break;
     
     case Rest::DELETE:
@@ -52,10 +56,9 @@ switch($req_type)
 }
 
 function Get_Param(){
-   if(isset($_POST['name']))
-       return new Parcours($_POST['name'],$_POST['command']);
-   else {
-       $jsondata = json_decode(file_get_contents("php://input"), true);
-       return new Parcours($jsondata['parcours']['name'],$jsondata['parcours']['command']);
-   }
+   
+   if($jsondata = json_decode(file_get_contents("php://input"), true))
+         return Parcours::withId($jsondata['parcours']['id'],$jsondata['parcours']['name'],$jsondata['parcours']['command']);
+   else 
+         return Parcours::withId($_POST["id"],$_POST['name'],$_POST['command']);
 }
