@@ -51,6 +51,11 @@ include_once('../data-Layer/model/parcours.php');
 		     if($num > 0) return true;
 		     else return false;
 	}
+	
+	private function cleanData($data) {
+		$this->_parcours_name = trim(htmlspecialchars(strip_tags($data->name)),'\'');
+		$this->_command = trim(htmlspecialchars(strip_tags($data->command)),'\'');
+    }
 
     public function read() {
    
@@ -65,9 +70,13 @@ include_once('../data-Layer/model/parcours.php');
 	
 	public function readById($parcours_id) {
 
-		 $query = 'SELECT * FROM hexapod WHERE parcours_id = ' . $parcours_id; 
+		 $query = 'SELECT * FROM hexapod WHERE parcours_id = :parcours_id'; 
 
 		 $stmt = $this->_conn->prepare($query);
+
+		 $this->_parcours_id = $parcours_id;
+
+		 $stmt->bindParam(':parcours_id', $this->_parcours_id);
 
 		 $stmt->execute();
 
@@ -83,16 +92,15 @@ include_once('../data-Layer/model/parcours.php');
 
 				  $stmt = $this->_conn->prepare($query);
 
-				  $this->_parcours_name = htmlspecialchars(strip_tags($parcours->name));
-				  $this->_command = htmlspecialchars(strip_tags($parcours->command));
-
+				  $this->cleanData($parcours);
+				  
 				  $stmt->bindParam(':parcours_name', $this->_parcours_name);
 				  $stmt->bindParam(':command', $this->_command);
 
 			 if($stmt->execute())
 					 return http_response_code();
 		 }
-		return "nameExist";
+		return "400";
     }
 
     public function update($id,$parcours) {
@@ -106,8 +114,7 @@ include_once('../data-Layer/model/parcours.php');
 				  $stmt = $this->_conn->prepare($query);
 
 				  $this->_parcours_id = $id;
-				  $this->_parcours_name = htmlspecialchars(strip_tags($parcours->name));
-				  $this->_command = htmlspecialchars(strip_tags($parcours->command));
+				  $this->cleanData($parcours);
 
 				  $stmt->bindParam(':parcours_id', $this->_parcours_id);
 				  $stmt->bindParam(':parcours_name', $this->_parcours_name);
@@ -116,10 +123,9 @@ include_once('../data-Layer/model/parcours.php');
 			 if($stmt->execute())
 					return http_response_code();
 		 }
-		 return "idExist";
+		 return "404";
     }
 
- 
     public function delete($id) {
 		
          if($this->exist($id)){
@@ -134,6 +140,6 @@ include_once('../data-Layer/model/parcours.php');
 			 if($stmt->execute()) 
 			 		return http_response_code();
 		 }
-		 return "idExist";
+		 return "404";
 	}
   }

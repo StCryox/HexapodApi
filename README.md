@@ -1,4 +1,4 @@
-# HexapodApi
+# HexapodApi : Parcours(FR) = Course(EN)
 # Methods : GET - POST - PUT - DELETE
 
 ## GET ## 
@@ -11,14 +11,9 @@ URL : ./HexapodApi/api/parcours_controller.php?id=
 ## POST ## 
 URL : ./HexapodApi/api/parcours_controller.php
 
- -- Form data --
-    $_POST['name']
-    $_POST['command']
-
  -- JSON format data --
    {
     "parcours": {
-    	"id": 0,
         "name": "",
 		"command": ""
        }
@@ -27,15 +22,9 @@ URL : ./HexapodApi/api/parcours_controller.php
 ## PUT ## 
 
 URL : ./HexapodApi/api/parcours_controller.php?id=
- -- Form data --
-    $_POST['name']
-    $_POST['command']
-
-URL : ./HexapodApi/api/parcours_controller.php
  -- JSON format data --
    {
     "parcours": {
-    	"id": ,
         "name": "",
 		"command": ""
        }

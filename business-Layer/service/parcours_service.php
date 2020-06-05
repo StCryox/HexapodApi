@@ -6,10 +6,10 @@ include_once('../api/rest_constants.php');
 
   class ParcoursService {
 	
-	private $parcours_repository = null;
+	private $_parcours_repository = null;
 
 	public function __construct() {
-		$this->parcours_repository = new ParcoursRepository();
+		$this->_parcours_repository = new ParcoursRepository();
 	  }
 	
 	private function getServerStatus($status) {
@@ -45,75 +45,64 @@ include_once('../api/rest_constants.php');
 				break;
 			case Rest::INTERNAL_ERROR:
 				$server_status = $status.' : Erreur interne du serveur.';
-				break;	
-			case 'nameExist':
-				$server_status = 'Le nom de parcours est déjà utilisé.';
-				break;
-			case 'idExist':
-				$server_status = 'Le parcours est introuvable.';
-				break;				
+				break;					
 		}
 		return $server_status;
 	}
+
+	private function RawDataBeautify($data) {
+		$res = array();
+		foreach ($data as $key) {
+			$replacement = '';
+			$TimePos = strpos($key->command, '+');
+			$TimeVal = substr($key->command,$TimePos+1,1);
+			if($TimeVal == 1)
+				$replacement = ' seconde.</br>';
+			else
+				$replacement = ' secondes.</br>';
+
+			$key->command = str_replace('z', "Avancer", $key->command);
+			$key->command = str_replace('q', "Tourner à gauche", $key->command);
+			$key->command = str_replace('s', "Reculer", $key->command);
+			$key->command = str_replace('d', "Tourner à droite", $key->command);
+			$key->command = str_replace('+', " pendant ", $key->command);
+			$key->command = str_replace(';', $replacement, $key->command);	
+			
+			array_push($res,$key);	 
+		 }
+		 return $res;
+	}
 	
 	public function get() {
-		$results = $this->parcours_repository->read();
-		//ECHO $results[0]->command;
+		$results = $this->RawDataBeautify($this->_parcours_repository->read());
 		
-		foreach ($results as $data) {
-			//echo $data->command.'</br>';
-		}
-		//echo $data->command.'</br>';
 	    if($results != false) {
 			return json_encode($results);	
 	    }
-        else {
-            return json_encode(
-                array('message' => 'Parcours non trouver')
-            );
-        }
 	}
 
 	public function getById($id) {
-		$results = $this->parcours_repository->readById($id);
+		$results = $this->RawDataBeautify($this->_parcours_repository->readById($id));
 
 	   if($results != false) {
 			foreach ($results as $parcours) {
 				return json_encode($parcours);  
 			}	
 	   }
-        else {
-            return json_encode(
-                array('message' => 'Parcours non trouver')
-            );
-        }
 	}
 
 	public function post($parcours) {
-		$status = $this->parcours_repository->create($parcours);
-		
-		if($status == 200){
-			return 'Le parcours a été crée.';
-		}
-		else
-			return $this->getServerStatus($status);	
+		$status = $this->_parcours_repository->create($parcours);
+		return $this->getServerStatus($status);	
 	}
 
 	public function put($id,$parcours) {
-		$status = $this->parcours_repository->update($id,$parcours);
-		if($status == 200){
-			return 'Le parcours a été modifié.';
-		}
-		else
-			return $this->getServerStatus($status);	
+		$status = $this->_parcours_repository->update($id,$parcours);
+		return $this->getServerStatus($status);	
 	}
 
 	public function delete($id) {
-		$status = $this->parcours_repository->delete($id);
-		if($status == 200){
-			return 'Le parcours a été supprimé.';
-		}
-		else
-			return $this->getServerStatus($status);	
+		$status = $this->_parcours_repository->delete($id);
+		return $this->getServerStatus($status);	
 	}	
   }
